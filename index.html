@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ukubona LLC</title>
+  <meta name="description" content="A sovereign learning infrastructure rooted in wellness, built for Uganda." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="Ukubona LLC" />
+  <meta property="og:description" content="A sovereign learning infrastructure rooted in wellness, built for Uganda." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ukubona-grand-central.onrender.com/" />
+  <meta property="og:image" content="https://abikesa.github.io/logos/assets/ukubona-light.png" />
+  <link rel="icon" href="https://abikesa.github.io/favicon/assets/favicon-light.ico" />
+  <link rel="icon" href="https://abikesa.github.io/favicon/assets/favicon-dark.ico" media="(prefers-color-scheme: dark)" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:       #f5f2ec;
+      --charcoal:    #1a1a18;
+      --mist:        #8a8a80;
+      --green-deep:  #1a4a2e;
+      --green-mid:   #2d6a45;
+      --green-bright:#3d8b5e;
+      --green-light: #e8f4ed;
+      --gold:        #b8860b;
+      --gold-light:  #f5e6a3;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--cream);
+      overflow: hidden;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--charcoal);
+    }
+
+    /* ── LOADING SCREEN ─────────────────────────────── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--cream);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-inner {
+      width: min(480px, 90vw);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 3rem;
+    }
+
+    /* Logo */
+    .logo-mark {
+      width: 48px;
+      height: 48px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.2s forwards;
+    }
+
+    /* SMART pillars */
+    .pillars {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+    }
+
+    .pillar-row {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      opacity: 0;
+      transform: translateY(12px);
+      padding: 0.6rem 0;
+      border-bottom: 0.5px solid transparent;
+      transition: border-color 0.4s ease;
+    }
+
+    .pillar-row.revealed {
+      border-bottom-color: #d8d4ca;
+    }
+
+    .pillar-letter {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--green-deep);
+      width: 2.5rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .pillar-accent {
+      color: var(--gold);
+    }
+
+    .pillar-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--charcoal);
+      line-height: 1;
+    }
+
+    .pillar-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--mist);
+      margin-left: auto;
+      opacity: 0;
+      transition: opacity 0.4s ease 0.2s;
+      white-space: nowrap;
+    }
+
+    .pillar-row.revealed .pillar-tag {
+      opacity: 1;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      width: 100%;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.5s forwards;
+    }
+
+    .progress-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--mist);
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 2px;
+      background: #ddd8d0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--green-mid);
+      width: 0%;
+      transition: width 0.4s ease;
+      border-radius: 2px;
+    }
+
+    /* Tagline */
+    .tagline {
+      font-size: 0.8rem;
+      color: var(--mist);
+      font-weight: 300;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.7s forwards;
+      letter-spacing: 0.02em;
+    }
+
+    /* Formula strip */
+    .formula {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: #b0aa9e;
+      letter-spacing: 0.06em;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 1s forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── IFRAME ─────────────────────────────────────── */
+    iframe {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      border: none;
+      opacity: 0;
+      transition: opacity 1s ease;
+      z-index: 1;
+    }
+
+    iframe.ready { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- Loading screen -->
+  <div id="loader">
+    <div class="loader-inner">
+
+      <!-- Logo -->
+      <svg class="logo-mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Ukubona">
+        <circle cx="24" cy="24" r="22" stroke="#1a4a2e" stroke-width="1.5"/>
+        <line x1="24" y1="2" x2="24" y2="46" stroke="#1a4a2e" stroke-width="1"/>
+        <line x1="2" y1="24" x2="46" y2="24" stroke="#1a4a2e" stroke-width="1"/>
+        <ellipse cx="24" cy="24" rx="10" ry="22" stroke="#1a4a2e" stroke-width="1"/>
+      </svg>
+
+      <!-- SMART pillars -->
+      <div class="pillars" id="pillars">
+        <div class="pillar-row" id="p0">
+          <span class="pillar-letter"><span class="pillar-accent">S</span></span>
+          <span class="pillar-name">Statistics</span>
+          <span class="pillar-tag">∑ · inferential cognition</span>
+        </div>
+        <div class="pillar-row" id="p1">
+          <span class="pillar-letter"><span class="pillar-accent">M</span></span>
+          <span class="pillar-name">Music</span>
+          <span class="pillar-tag">🎵 · harmonic cognition</span>
+        </div>
+        <div class="pillar-row" id="p2">
+          <span class="pillar-letter"><span class="pillar-accent">A</span></span>
+          <span class="pillar-name">Adaptation</span>
+          <span class="pillar-tag">🧬 · contextual intelligence</span>
+        </div>
+        <div class="pillar-row" id="p3">
+          <span class="pillar-letter"><span class="pillar-accent">R</span></span>
+          <span class="pillar-name">Regulation</span>
+          <span class="pillar-tag">⚖️ · governance & wellbeing</span>
+        </div>
+        <div class="pillar-row" id="p4">
+          <span class="pillar-letter"><span class="pillar-accent">T</span></span>
+          <span class="pillar-name">Technology</span>
+          <span class="pillar-tag">⬡ · sovereign infrastructure</span>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Loading school</span>
+          <span id="pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-bar" id="bar"></div>
+        </div>
+      </div>
+
+      <p class="tagline">A sovereign learning infrastructure rooted in wellness, built for Uganda.</p>
+
+      <p class="formula">θᵗ → L₀+Σwᵢ·Lᵢ → f(σ²,λ,ε) → γ|ε_FGT|² → L(θᵗ⁺¹)</p>
+
+    </div>
+  </div>
+
+  <!-- App iframe -->
+  <iframe
+    id="app"
+    src="https://ukubona-grand-central.onrender.com/"
+    loading="eager"
+    allowfullscreen
+  ></iframe>
+
+  <script>
+    const TARGET = 'https://ukubona-grand-central.onrender.com'
+    const loader = document.getElementById('loader')
+    const iframe = document.getElementById('app')
+    const bar    = document.getElementById('bar')
+    const pct    = document.getElementById('pct')
+    const rows   = [0,1,2,3,4].map(i => document.getElementById('p' + i))
+
+    /* Stagger pillar reveals over first 15s */
+    const REVEAL_TIMES = [800, 2800, 6000, 10000, 15000]
+    REVEAL_TIMES.forEach((t, i) => {
+      setTimeout(() => {
+        rows[i].style.opacity = '1'
+        rows[i].style.transform = 'translateY(0)'
+        rows[i].style.transition = 'opacity 0.6s ease, transform 0.6s ease'
+        rows[i].classList.add('revealed')
+      }, t)
+    })
+
+    /* Progress simulation — eases to 92% over 50s, never hits 100 until load */
+    const START = Date.now()
+    const TOTAL = 50000
+    let raf
+
+    function tick() {
+      const elapsed = Date.now() - START
+      const raw = elapsed / TOTAL
+      /* ease-out curve: slows as it approaches end */
+      const progress = Math.min(92, Math.round(1 - Math.pow(1 - raw, 2.5)) * 100)
+      bar.style.width = progress + '%'
+      pct.textContent = progress + '%'
+      if (progress < 92) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+
+    /* Dismiss on iframe load */
+    function dismiss() {
+      cancelAnimationFrame(raf)
+      bar.style.width = '100%'
+      pct.textContent = '100%'
+      bar.style.transition = 'width 0.3s ease'
+      setTimeout(() => {
+        iframe.classList.add('ready')
+        loader.classList.add('hidden')
+      }, 350)
+    }
+
+    iframe.addEventListener('load', dismiss)
+
+    /* Safety net: force dismiss after 55s regardless */
+    setTimeout(dismiss, 55000)
+
+    /* Navigation history shim */
+    iframe.addEventListener('load', () => {
+      try {
+        iframe.contentWindow.addEventListener('popstate', () => {
+          window.history.replaceState(null, '', window.location.href)
+        })
+      } catch(e) {}
+    })
+  </script>
+</body>
+</html>
