@@ -279,66 +279,79 @@
     allowfullscreen
   ></iframe>
 
-  <script>
-    const TARGET = 'https://ukubona-grand-central.onrender.com'
-    const loader = document.getElementById('loader')
-    const iframe = document.getElementById('app')
-    const bar    = document.getElementById('bar')
-    const pct    = document.getElementById('pct')
-    const rows   = [0,1,2,3,4].map(i => document.getElementById('p' + i))
+<script>
+  const TARGET = 'https://ukubona-grand-central.onrender.com'
+  const loader = document.getElementById('loader')
+  const iframe = document.getElementById('app')
+  const bar    = document.getElementById('bar')
+  const pct    = document.getElementById('pct')
+  const rows   = [0,1,2,3,4].map(i => document.getElementById('p' + i))
 
-    /* Stagger pillar reveals over first 15s */
-    const REVEAL_TIMES = [800, 2800, 6000, 10000, 15000]
-    REVEAL_TIMES.forEach((t, i) => {
-      setTimeout(() => {
-        rows[i].style.opacity = '1'
-        rows[i].style.transform = 'translateY(0)'
-        rows[i].style.transition = 'opacity 0.6s ease, transform 0.6s ease'
-        rows[i].classList.add('revealed')
-      }, t)
-    })
+  /* Two-gate state */
+  let iframeLoaded = false
+  let timerDone    = false
 
-    /* Progress simulation — eases to 92% over 50s, never hits 100 until load */
-    const START = Date.now()
-    const TOTAL = 50000
-    let raf
+  function check() {
+    if (iframeLoaded && timerDone) dismiss()
+  }
 
-    function tick() {
-      const elapsed = Date.now() - START
-      const raw = elapsed / TOTAL
-      /* ease-out curve: slows as it approaches end */
-      const progress = Math.min(92, Math.round(1 - Math.pow(1 - raw, 2.5)) * 100)
-      bar.style.width = progress + '%'
-      pct.textContent = progress + '%'
-      if (progress < 92) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
+  /* Stagger pillar reveals over first 15s */
+  const REVEAL_TIMES = [800, 2800, 6000, 10000, 15000]
+  REVEAL_TIMES.forEach((t, i) => {
+    setTimeout(() => {
+      rows[i].style.opacity    = '1'
+      rows[i].style.transform  = 'translateY(0)'
+      rows[i].style.transition = 'opacity 0.6s ease, transform 0.6s ease'
+      rows[i].classList.add('revealed')
+    }, t)
+  })
 
-    /* Dismiss on iframe load */
-    function dismiss() {
-      cancelAnimationFrame(raf)
-      bar.style.width = '100%'
-      pct.textContent = '100%'
-      bar.style.transition = 'width 0.3s ease'
-      setTimeout(() => {
-        iframe.classList.add('ready')
-        loader.classList.add('hidden')
-      }, 350)
-    }
+  /* Progress simulation — eases to 92% over 50s */
+  const START = Date.now()
+  const TOTAL = 50000
+  let raf
 
-    iframe.addEventListener('load', dismiss)
+  function tick() {
+    const elapsed  = Date.now() - START
+    const raw      = elapsed / TOTAL
+    const progress = Math.min(92, Math.round((1 - Math.pow(1 - raw, 2.5)) * 100))
+    bar.style.width  = progress + '%'
+    pct.textContent  = progress + '%'
+    if (progress < 92) raf = requestAnimationFrame(tick)
+  }
+  raf = requestAnimationFrame(tick)
 
-    /* Safety net: force dismiss after 55s regardless */
-    setTimeout(dismiss, 55000)
+  function dismiss() {
+    cancelAnimationFrame(raf)
+    bar.style.width       = '100%'
+    pct.textContent       = '100%'
+    bar.style.transition  = 'width 0.3s ease'
+    setTimeout(() => {
+      iframe.classList.add('ready')
+      loader.classList.add('hidden')
+    }, 350)
+  }
 
-    /* Navigation history shim */
-    iframe.addEventListener('load', () => {
-      try {
-        iframe.contentWindow.addEventListener('popstate', () => {
-          window.history.replaceState(null, '', window.location.href)
-        })
-      } catch(e) {}
-    })
-  </script>
+  /* Gate 1: iframe finishes loading */
+  iframe.addEventListener('load', () => {
+    iframeLoaded = true
+    check()
+  })
+
+  /* Gate 2: 50s minimum delay */
+  setTimeout(() => {
+    timerDone = true
+    check()
+  }, 50000)
+
+  /* Navigation history shim */
+  iframe.addEventListener('load', () => {
+    try {
+      iframe.contentWindow.addEventListener('popstate', () => {
+        window.history.replaceState(null, '', window.location.href)
+      })
+    } catch(e) {}
+  })
+</script>
 </body>
 </html>
