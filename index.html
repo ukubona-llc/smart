@@ -16,7 +16,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
+  <link rel="preload" href="ukhona/ukubona-light.png" as="image" />
+  <link rel="preload" href="ukhona/ukubona-dark.png" as="image" />
   <!--
     Set correct theme BEFORE first paint — eliminates any flash of wrong theme.
     This tiny synchronous script runs in <head> before the browser renders anything.
@@ -125,8 +126,7 @@
       display: block;
       opacity: 0;
       animation: fadeUp 0.6s ease 0.2s forwards;
-      color: var(--logo-ink);  /* SVG uses currentColor → this drives stroke */
-      transition: color 0.4s ease;
+      transition: opacity 0.4s ease;
     }
 
     /* ── SMART PILLARS ──────────────────────────────── */
@@ -280,12 +280,10 @@
         Dark  mode: cream ink   (#f5f2ec) on dark bg      ← matches ukubona-light.png
         No network request, no loading delay, no flash ever.
       -->
-      <svg id="site-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Ukubona">
-        <circle  cx="24" cy="24" r="22"  stroke="currentColor" stroke-width="1.5"/>
-        <line    x1="24" y1="2"  x2="24" y2="46" stroke="currentColor" stroke-width="1"/>
-        <line    x1="2"  y1="24" x2="46" y2="24" stroke="currentColor" stroke-width="1"/>
-        <ellipse cx="24" cy="24" rx="10" ry="22"  stroke="currentColor" stroke-width="1"/>
-      </svg>
+      <img id="site-logo" aria-label="Ukubona"
+        src="ukhona/ukubona-dark.png"
+        alt="Ukubona"
+      />
 
       <!-- SMART pillars — revealed one by one over 15 s -->
       <div class="pillars">
@@ -358,10 +356,14 @@
   const rows      = [0,1,2,3,4].map(i => document.getElementById('p' + i))
 
   /* ── Theme (reads the value already applied by the <head> script) ── */
+  const logo       = document.getElementById('site-logo')
+  const LOGO_LIGHT = new Image(); LOGO_LIGHT.src = 'ukhona/ukubona-light.png'
+  const LOGO_DARK  = new Image(); LOGO_DARK.src  = 'ukhona/ukubona-dark.png'
+
   const saved       = localStorage.getItem('ukubona-theme')
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
   let theme         = saved || (prefersDark ? 'dark' : 'light')
-  syncToggleLabel(theme)  // <head> script already set data-theme; just sync the label
+  syncToggleLabel(theme)
 
   toggleBtn.addEventListener('click', () => {
     theme = (theme === 'light') ? 'dark' : 'light'
@@ -371,8 +373,8 @@
   })
 
   function syncToggleLabel(t) {
-    // Label shows what clicking will SWITCH TO
     toggleLbl.textContent = (t === 'light') ? 'Dark' : 'Light'
+    logo.src = (t === 'light') ? LOGO_DARK.src : LOGO_LIGHT.src
   }
 
   /* ── Pillar reveals — staggered over first 15 s ─── */
